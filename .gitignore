@@ -1,1 +1,4 @@
 /vision/venv
+/vision/.env
+/vision/faiss_index.index
+/vision/temp.csv
