@@ -2,3 +2,4 @@
 /vision/.env
 /vision/faiss_index.index
 /vision/temp.csv
+/vision/__pycache__
