@@ -16,7 +16,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 total_results_to_fetch = 3  # total number of results to fetch
 
 # Apply the nest_asyncio patch
-nest_asyncio.apply()
+# nest_asyncio.apply()
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
