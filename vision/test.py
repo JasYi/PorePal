@@ -3,7 +3,7 @@ import base64
 import time
 
 url = 'http://127.0.0.1:8000/upload_image'
-image_path = 'skin.jpg'
+image_path = 'test_img.jpg'
 
 start_time = time.time()
 
