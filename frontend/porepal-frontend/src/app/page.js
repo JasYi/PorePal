@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Upload, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [uploadedImages, setUploadedImages] = useState([
@@ -19,6 +20,7 @@ export default function Home() {
     { id: 2, file: null, preview: null },
     { id: 3, file: null, preview: null },
   ]);
+  const [loading, setLoading] = useState(false);
 
   const fileInputRefs = [useRef(null), useRef(null), useRef(null)];
 
@@ -27,6 +29,8 @@ export default function Home() {
     "Front Facing",
     "Right Side of Face",
   ];
+
+  const router = useRouter();
 
   const handleFileChange = (e, id) => {
     if (e.target.files && e.target.files[0]) {
@@ -52,17 +56,56 @@ export default function Home() {
     );
   };
 
-  const handleSubmit = (e) => {
+  // submit images to backend and get solutions as a response
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(
-      "Submitted files:",
-      uploadedImages.map((img) => img.file)
-    );
-    alert("Images submitted successfully!");
+    setLoading(true);
+    // Create an array of promises for reading files
+    const imagePromises = uploadedImages.map((img) => {
+      if (!img.file) return null;
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result.split(",")[1];
+          resolve(base64String);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(img.file);
+      });
+    });
+    // Wait for all files to be read
+    const images_out = (await Promise.all(imagePromises)).filter(Boolean);
+    const payload = { images: images_out };
+    console.log(payload);
+    fetch("http://127.0.0.1:8000/upload_multiple_images", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setLoading(false);
+        // Redirect to /results with the analysis data
+        router.push(
+          `/results?data=${encodeURIComponent(JSON.stringify(data))}`
+        );
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setLoading(false);
+      });
   };
 
   return (
     <div className="container mx-auto py-10 px-4">
+      {loading && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-20 transition-opacity duration-300 opacity-60">
+          <div className="w-16 h-16 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+          <h1 className="text-white mt-4">Analyzing your skin...</h1>
+        </div>
+      )}
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-2">PorePal</h1>
         <p className="text-muted-foreground text-center mb-8">
@@ -100,7 +143,7 @@ export default function Home() {
                     ) : (
                       <div className="flex flex-col items-center justify-center h-full p-4">
                         <Image
-                          src={`/placeholder.svg?height=200&width=200&text=Example ${image.id}`}
+                          src={`/example${image.id}.jpeg?height=200&width=200&text=Example ${image.id}`}
                           alt={`Example for image ${image.id}`}
                           width={150}
                           height={150}
