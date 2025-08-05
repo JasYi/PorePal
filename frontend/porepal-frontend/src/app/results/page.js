@@ -1,22 +1,20 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { React, useState } from "react";
+import { React, useState, Suspense } from "react";
 
 // This page expects the analysis data to be in the format:
 // { problem: string, description: string, solutions: string[] }
 // The data is passed via the 'data' query parameter as a JSON string.
 
-export default function ResultsPage() {
+function ResultsPageInner() {
   const searchParams = useSearchParams();
   // const [data, setData] = useState({});
   const dataParam = searchParams.get("data");
   let analysis = null;
   try {
     analysis = dataParam ? JSON.parse(dataParam) : null;
-
     console.log(analysis);
-
     // setData(analysis);
   } catch (e) {
     analysis = null;
@@ -52,12 +50,9 @@ export default function ResultsPage() {
               {/* Example image for the skin problem */}
               <div className="w-40 h-40 mb-4 flex items-center justify-center bg-gray-100 rounded-md overflow-hidden">
                 <img
-                  src={`/examples/${problem}.jpg`}
+                  src={`/${problem}.jpg`}
                   alt={problem}
                   className="object-cover w-full h-full"
-                  onError={(e) => {
-                    e.target.src = `/${problem}.jpg`;
-                  }}
                 />
               </div>
               <h3 className="text-lg font-medium mb-2 text-left w-full">
@@ -85,5 +80,13 @@ export default function ResultsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ResultsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResultsPageInner />
+    </Suspense>
   );
 }

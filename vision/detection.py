@@ -4,7 +4,8 @@ import base64
 import numpy as np
 from collections import Counter
 
-def detect_acne(encoded_image):
+# modify this function to count differently
+def detect_acne(encoded_image, confidence):
 
     # Load your model (adjust the path as needed)
     model = YOLO('best.pt')
@@ -14,11 +15,17 @@ def detect_acne(encoded_image):
     image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
     # Run inference on an image (adjust the image path as needed)
-    results = model(image, show=False, conf=0.05)
+    results = model(image, show=False, conf=confidence)
 
     # A list to store the detected object names
     detected_objects = []
 
+    # as iterate, progressive update the counts so you don't have to do it at the end
+    # also go through results in high to low confidence
+    # if first time seeing item add photo + create counter for it
+    # redo in that way so you can pass the sub image encoded in base64 back to the front end
+    # use passed image to front end to provide pictures of the skin issue to the person
+    # also maybe provide annotated image so they can see
     # Iterate over the results, using an index for unique file names
     for idx, result in enumerate(results):
         # Render the image with annotations (returns a NumPy array in BGR format)

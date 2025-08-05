@@ -20,12 +20,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
+@app.get("/api/hello")
 async def home():
     return {"message": "Hello, World!"}
 
 # handle being able to upload multiple images
-@app.post("/upload_multiple_images")
+@app.post("/api/upload_multiple_images")
 async def upload_multiple_images(request: Request):
     data = await request.json()
     if 'images' not in data:
@@ -45,7 +45,7 @@ async def upload_multiple_images(request: Request):
         # iterate through images and get total sums for acne problems detected
         for image_data in images:
             image = base64.b64decode(image_data)
-            detected = detect_acne(image)
+            detected = detect_acne(image, conf = 0.1)
             combined = defaultdict(int)
             for elem in detected + all_detected:
                 combined[elem[0]] += elem[1]
@@ -64,7 +64,7 @@ async def upload_multiple_images(request: Request):
         raise HTTPException(status_code=400, detail=str(e))
 
 # handle being able to upload a single image
-@app.post("/upload_image")
+@app.post("/api/upload_image")
 async def upload_image(request: Request):
     data = await request.json()
     if 'image' not in data:
@@ -74,7 +74,7 @@ async def upload_image(request: Request):
     try:
         image = base64.b64decode(image_data)
         # Process the image as needed
-        detected = detect_acne(image)
+        detected = detect_acne(image, conf = 0.05)
         
         print(detected)
         

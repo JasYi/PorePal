@@ -3,3 +3,5 @@
 /vision/faiss_index.index
 /vision/temp.csv
 /vision/__pycache__
+/frontend/porepal-frontend/api/__pycache__
+/frontend/porepal-frontend/api/venv
