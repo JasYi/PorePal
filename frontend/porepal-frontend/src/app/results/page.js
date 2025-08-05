@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import React from "react";
+import { React, useState } from "react";
 
 // This page expects the analysis data to be in the format:
 // { problem: string, description: string, solutions: string[] }
@@ -9,10 +9,15 @@ import React from "react";
 
 export default function ResultsPage() {
   const searchParams = useSearchParams();
+  // const [data, setData] = useState({});
   const dataParam = searchParams.get("data");
   let analysis = null;
   try {
     analysis = dataParam ? JSON.parse(dataParam) : null;
+
+    console.log(analysis);
+
+    // setData(analysis);
   } catch (e) {
     analysis = null;
   }
@@ -30,22 +35,54 @@ export default function ResultsPage() {
   // Example: assuming analysis = { problem: string, description: string, solutions: string[] }
   return (
     <div className="container mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-4">Skincare Analysis Results</h1>
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold">Problem</h2>
-        <p className="mb-2">{analysis.problem || "Unknown problem"}</p>
-        <h3 className="text-lg font-semibold mt-4">Description</h3>
-        <p className="mb-2">
-          {analysis.description || "No description available."}
-        </p>
-      </div>
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Recommended Solutions</h3>
-        <ul className="list-disc pl-6">
-          {(analysis.solutions || []).map((solution, idx) => (
-            <li key={idx}>{solution}</li>
-          ))}
-        </ul>
+      <h1 className="text-3xl font-bold text-center mb-6">
+        Your Skin Analysis Results
+      </h1>
+      <div className="grid gap-8 md:grid-cols-2">
+        {analysis?.solutions &&
+        Array.isArray(analysis.solutions) &&
+        analysis.solutions.length > 0 ? (
+          analysis.solutions.map(([problem, solutions], idx) => (
+            <div
+              key={problem}
+              className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center">
+              <h2 className="text-xl font-semibold mb-2 text-center capitalize">
+                {problem.replace(/_/g, " ")}
+              </h2>
+              {/* Example image for the skin problem */}
+              <div className="w-40 h-40 mb-4 flex items-center justify-center bg-gray-100 rounded-md overflow-hidden">
+                <img
+                  src={`/examples/${problem}.jpg`}
+                  alt={problem}
+                  className="object-cover w-full h-full"
+                  onError={(e) => {
+                    e.target.src = `/${problem}.jpg`;
+                  }}
+                />
+              </div>
+              <h3 className="text-lg font-medium mb-2 text-left w-full">
+                Recommended Solutions:
+              </h3>
+              <ul className="list-disc list-inside text-left w-full space-y-1">
+                {Array.isArray(solutions) && solutions.length > 0 ? (
+                  solutions.map((sol, i) => <li key={i}>{sol}</li>)
+                ) : (
+                  <li>No solutions found.</li>
+                )}
+              </ul>
+            </div>
+          ))
+        ) : (
+          <div className="col-span-2 text-center">
+            <h2 className="text-xl font-semibold mb-2">
+              No skin problems detected.
+            </h2>
+            <p>
+              Try uploading clearer images or different angles for better
+              analysis.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

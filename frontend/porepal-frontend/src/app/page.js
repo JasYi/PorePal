@@ -77,7 +77,7 @@ export default function Home() {
     const images_out = (await Promise.all(imagePromises)).filter(Boolean);
     const payload = { images: images_out };
     console.log(payload);
-    fetch("http://127.0.0.1:8000/upload_multiple_images", {
+    fetch("http://localhost:3000/api/upload_multiple_images", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
