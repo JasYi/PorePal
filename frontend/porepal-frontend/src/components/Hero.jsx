@@ -29,7 +29,7 @@ export default function Hero() {
           stiffness: 200,
           damping: 18,
         }}>
-        AI-powered skincare for Gen Z. Snap, upload, and glow up instantly! 🚀
+        AI-powered skincare. Snap, upload, and glow up instantly! 🚀
       </motion.p>
       <style jsx>{`
         @keyframes gradient-wrap {
