@@ -9,7 +9,7 @@ def detect_acne(encoded_image, conf=0.1):
 
     print("Detecting acne...")
     # Load your model (adjust the path as needed)
-    model = YOLO('best.pt')
+    model = YOLO('api/best.pt')
 
     np_arr = np.frombuffer(encoded_image, np.uint8)
 

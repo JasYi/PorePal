@@ -2,6 +2,8 @@
 
 import React, { useState, useRef } from "react";
 import Image from "next/image";
+import Hero from "@/components/Hero";
+import MobileNav from "@/components/MobileNav";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -99,62 +101,45 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto py-10 px-4">
-      {loading && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-20 transition-opacity duration-300 opacity-60">
-          <div className="w-16 h-16 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
-          <h1 className="text-white mt-4">Analyzing your skin...</h1>
-        </div>
-      )}
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-2">PorePal</h1>
-        <p className="text-muted-foreground text-center mb-8">
-          Use AI to find the best skincare products for your face!
-        </p>
-
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-6 md:grid-cols-3 mb-8">
+    <div className="min-h-screen flex flex-col items-center justify-start bg-background px-2 pt-2">
+      <Hero />
+      <main className="w-full max-w-xl flex flex-col items-center gap-6 animate-fadein">
+        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+          <div className="flex flex-row gap-3 justify-center w-full">
             {uploadedImages.map((image, index) => (
-              <Card key={image.id} className="overflow-hidden">
-                <CardHeader className="p-4">
-                  <CardTitle className="text-lg">
-                    {exampleDescriptions[index]}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <div className="relative aspect-square mb-4 bg-muted rounded-md overflow-hidden">
-                    {image.preview ? (
-                      <>
-                        <Image
-                          src={image.preview || "/placeholder.svg"}
-                          alt={`Uploaded image ${image.id}`}
-                          fill
-                          className="object-cover"
-                        />
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-2 right-2 h-8 w-8 rounded-full"
-                          type="button"
-                          onClick={() => removeImage(image.id)}>
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full p-4">
-                        <Image
-                          src={`/example${image.id}.jpeg?height=200&width=200&text=Example ${image.id}`}
-                          alt={`Example for image ${image.id}`}
-                          width={150}
-                          height={150}
-                          className="object-cover mb-2"
-                        />
-                        <p className="text-xs text-center text-muted-foreground">
-                          Example image
-                        </p>
-                      </div>
-                    )}
-                  </div>
+              <Card key={image.id} emoji={image.preview ? "📸" : "➕"}>
+                <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-blue-100 border-2 border-blue-200 group-hover:border-blue-400 transition-all mx-auto">
+                  {image.preview ? (
+                    <>
+                      <Image
+                        src={image.preview}
+                        alt={`Uploaded image ${image.id}`}
+                        fill
+                        className="object-cover"
+                        priority
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 bg-white/80 rounded-full p-1 shadow hover:bg-hot-pink hover:text-white transition-colors"
+                        onClick={() => removeImage(image.id)}
+                        aria-label="Remove image">
+                        <span role="img" aria-label="remove">
+                          ❌
+                        </span>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      className="w-full h-full flex flex-col items-center justify-center text-electric-blue hover:text-hot-pink transition-colors"
+                      onClick={() => triggerFileInput(index)}
+                      aria-label="Upload image">
+                      <span className="text-3xl mb-1 animate-bounce">📷</span>
+                      <span className="text-xs font-semibold">
+                        {exampleDescriptions[index]}
+                      </span>
+                    </button>
+                  )}
                   <input
                     type="file"
                     ref={fileInputRefs[index]}
@@ -162,31 +147,29 @@ export default function Home() {
                     accept="image/*"
                     className="hidden"
                   />
-                </CardContent>
-                <CardFooter className="p-4 pt-0">
-                  <Button
-                    type="button"
-                    variant={image.preview ? "outline" : "default"}
-                    className="w-full"
-                    onClick={() => triggerFileInput(index)}>
-                    <Upload className="mr-2 h-4 w-4" />
-                    {image.preview ? "Change Image" : "Upload Image"}
-                  </Button>
-                </CardFooter>
+                </div>
+                <span className="mt-2 text-xs text-foreground font-medium text-center select-none">
+                  {image.preview ? "Ready!" : "Tap to add"}
+                </span>
               </Card>
             ))}
           </div>
-
-          <div className="flex justify-center">
-            <Button
-              type="submit"
-              size="lg"
-              disabled={!uploadedImages.every((img) => img.file)}>
-              Submit All Images
-            </Button>
-          </div>
+          <Button
+            type="submit"
+            className="mt-4 w-full"
+            emoji="🚀"
+            disabled={!uploadedImages.every((img) => img.file)}>
+            {loading ? "Analyzing..." : "See My Results!"}
+          </Button>
         </form>
-      </div>
+        <div className="mt-6 text-center text-xs text-muted-foreground select-none animate-fadein-slow">
+          <span>
+            Try different angles for best results. Your images never leave your
+            device until you submit.
+          </span>
+        </div>
+      </main>
+      <MobileNav />
     </div>
   );
 }

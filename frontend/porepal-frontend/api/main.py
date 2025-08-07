@@ -1,99 +1,88 @@
-# run using `uvicorn main:app --host 127.0.0.1 --port 5328`
 
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+# run using `python main.py` or `flask run` (set FLASK_APP=main.py)
+
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import base64
 from detection import detect_acne
 from ai_search import fetch_and_process_data
 from collections import defaultdict
 
-app = FastAPI()
+app = Flask(__name__)
+CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000"], supports_credentials=True)
 
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
+@app.route("/hello", methods=["GET"])
+def home():
+    return jsonify({"message": "Hello, World!"})
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-@app.get("/hello")
-async def home():
-    return {"message": "Hello, World!"}
 
 # handle being able to upload multiple images
-@app.post("/upload_multiple_images")
-async def upload_multiple_images(request: Request):
-    data = await request.json()
-    if 'images' not in data:
-        raise HTTPException(status_code=400, detail="No images provided")
-    
-    # print(data)
-    
-    # get the images from the data
-    images = data['images']
-    all_solutions = []
-    
-    # print(images)
-    
-    # loop through the images and detect the acne
+@app.route("/upload_multiple_images", methods=["POST"])
+def upload_multiple_images():
     try:
+        data = request.get_json()
+        if 'images' not in data:
+            return jsonify({"detail": "No images provided"}), 400
+
+        images = data['images']
         all_detected = []
-        # iterate through images and get total sums for acne problems detected
         for image_data in images:
             image = base64.b64decode(image_data)
             print("Processing image...")
-            detected = detect_acne(image, conf = 0.1)
+            detected = detect_acne(image, conf=0.1)
             combined = defaultdict(int)
             for elem in detected + all_detected:
                 combined[elem[0]] += elem[1]
             all_detected = list(combined.items())
             print("image detected: ", detected)
-        
+
         # find solutions to all detected acne problems
         all_solutions = []
         for problem in all_detected:
             # find solutions to all detected acne problems
-            solutions = await fetch_and_process_data(problem[0])
+            # fetch_and_process_data may be async, so run synchronously if needed
+            try:
+                solutions = fetch_and_process_data(problem[0])
+                if hasattr(solutions, '__await__'):
+                    # If coroutine, run synchronously
+                    import asyncio
+                    solutions = asyncio.run(solutions)
+            except Exception as e:
+                solutions = [f"Error fetching solutions: {str(e)}"]
             all_solutions.append((problem[0], solutions))
-        
-        return {"message": "Images received successfully", "solutions": all_solutions}
+
+        return jsonify({"message": "Images received successfully", "solutions": all_solutions})
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        return jsonify({"detail": str(e)}), 400
+
 
 # handle being able to upload a single image
-@app.post("/upload_image")
-async def upload_image(request: Request):
-    data = await request.json()
-    if 'image' not in data:
-        raise HTTPException(status_code=400, detail="No image provided")
-
-    image_data = data['image']
+@app.route("/upload_image", methods=["POST"])
+def upload_image():
     try:
-        image = base64.b64decode(image_data)
-        # Process the image as needed
-        detected = detect_acne(image, conf = 0.05)
-        
-        print(detected)
-        
-        all_solutions = []
-        
-        for problem in detected:
-            # Process the detected problem
-            print(f"Detected problem: {problem}")
-            # Fetch and process data related to the detected problem
-            solutions = await fetch_and_process_data(problem[0])
-            print(solutions)
-            all_solutions.append((problem[0], solutions))
-        
-        return {"message": "Image received successfully", "solutions": all_solutions}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        data = request.get_json()
+        if 'image' not in data:
+            return jsonify({"detail": "No image provided"}), 400
 
-# if __name__ == '__main__':
-#     uvicorn.run(app, host="0.0.0.0", port=8000, debug=True)
+        image_data = data['image']
+        image = base64.b64decode(image_data)
+        detected = detect_acne(image, conf=0.05)
+        print(detected)
+        all_solutions = []
+        for problem in detected:
+            print(f"Detected problem: {problem}")
+            try:
+                solutions = fetch_and_process_data(problem[0])
+                if hasattr(solutions, '__await__'):
+                    import asyncio
+                    solutions = asyncio.run(solutions)
+            except Exception as e:
+                solutions = [f"Error fetching solutions: {str(e)}"]
+            all_solutions.append((problem[0], solutions))
+        return jsonify({"message": "Image received successfully", "solutions": all_solutions})
+    except Exception as e:
+        return jsonify({"detail": str(e)}), 400
+
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=5328, debug=True)
