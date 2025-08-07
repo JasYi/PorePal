@@ -1,15 +1,24 @@
 import cv2
-from ultralytics import YOLO
 import base64
 import numpy as np
 from collections import Counter
+
+# Global variable for lazy loading
+_model = None
+
+def get_model():
+    global _model
+    if _model is None:
+        from ultralytics import YOLO
+        _model = YOLO('api/best.pt')
+    return _model
 
 # modify this function to count differently
 def detect_acne(encoded_image, conf=0.1):
 
     print("Detecting acne...")
-    # Load your model (adjust the path as needed)
-    model = YOLO('api/best.pt')
+    # Load model only when function is called
+    model = get_model()
 
     np_arr = np.frombuffer(encoded_image, np.uint8)
 
