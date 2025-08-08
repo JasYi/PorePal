@@ -53,8 +53,10 @@ export default {
   },
   plugins: [],
   content: [
+    "./app/**/*.{js,ts,jsx,tsx}",
     "./src/app/**/*.{js,jsx,ts,tsx}",
     "./src/components/**/*.{js,jsx,ts,tsx}",
+    "./**/*.{js,ts,jsx,tsx}",
     // add other folders if needed
   ],
 };
