@@ -11,3 +11,5 @@
 /frontend/porepal-frontend/vercel.json/
 /vision/vision_deploy/.env
 /.vercel/
+/vision/vision_deploy/venv/
+/frontend/porepal-frontend/.env.local

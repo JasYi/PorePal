@@ -17,6 +17,8 @@ import { Upload, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const baseUrl = process.env.API_BASE_URL;
+
   const [uploadedImages, setUploadedImages] = useState([
     { id: 1, file: null, preview: null },
     { id: 2, file: null, preview: null },
@@ -79,7 +81,7 @@ export default function Home() {
     const images_out = (await Promise.all(imagePromises)).filter(Boolean);
     const payload = { images: images_out };
     console.log(payload);
-    fetch("http://localhost:3000/api/upload_multiple_images", {
+    fetch(`${baseUrl}/api/upload_multiple_images`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
