@@ -52,4 +52,9 @@ export default {
     },
   },
   plugins: [],
+  content: [
+    "./src/app/**/*.{js,jsx,ts,tsx}",
+    "./src/components/**/*.{js,jsx,ts,tsx}",
+    // add other folders if needed
+  ],
 };
