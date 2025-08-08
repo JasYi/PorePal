@@ -1,0 +1,13 @@
+vision/venv/
+vision/.env
+vision/faiss_index.index
+vision/temp.csv
+vision/__pycache__/
+frontend/porepal-frontend/api/__pycache__/
+frontend/porepal-frontend/api/venv/
+.vercel
+vision/vision_deploy/.env
+frontend/porepal-frontend/node_modules/
+frontend/porepal-frontend/.vercel/
+frontend/porepal-frontend/.next/
+node_modules/
