@@ -5,3 +5,9 @@
 /vision/__pycache__
 /frontend/porepal-frontend/api/__pycache__
 /frontend/porepal-frontend/api/venv
+/node_modules/
+/frontend/porepal-frontend/node_modules/
+/frontend/porepal-frontend/.vercel/
+/frontend/porepal-frontend/vercel.json/
+/vision/vision_deploy/.env
+/.vercel/

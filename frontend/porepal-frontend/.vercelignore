@@ -1,0 +1,16 @@
+@"
+node_modules/
+.next/cache/
+__pycache__/
+api/__pycache__/
+api/venv/
+api/.env
+*.pyc
+.venv/
+.vscode/
+.git/
+*.log
+*.map
+.DS_Store
+.env
+"@ | Set-Content .vercelignore
