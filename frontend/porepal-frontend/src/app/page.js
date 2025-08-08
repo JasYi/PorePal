@@ -17,7 +17,7 @@ import { Upload, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const baseUrl = process.env.API_BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   const [uploadedImages, setUploadedImages] = useState([
     { id: 1, file: null, preview: null },
