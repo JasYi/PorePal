@@ -21,7 +21,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!baseUrl) return;
-    fetch(`${baseUrl}/api/hello`)
+    fetch(`${baseUrl}/hello`)
       .then((res) => res.json())
       .then((data) => {
         console.log("Response from /hello:", data);
@@ -93,7 +93,7 @@ export default function Home() {
     const images_out = (await Promise.all(imagePromises)).filter(Boolean);
     const payload = { images: images_out };
     console.log(payload);
-    fetch(`${baseUrl}/api/upload_multiple_images`, {
+    fetch(`${baseUrl}/upload_multiple_images`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
