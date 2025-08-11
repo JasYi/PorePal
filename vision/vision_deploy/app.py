@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 CORS(
     app,
-    resources={r"/api/*": {
+    resources={r"/*": {
         "origins": [
             "http://localhost:3000",
             "http://127.0.0.1:3000",
@@ -24,13 +24,13 @@ CORS(
     supports_credentials=False
 )
 
-@app.route("/api/hello", methods=["GET"])
+@app.route("/hello", methods=["GET"])
 def home():
     return jsonify({"message": "Hello, World!"})
 
 
 # handle being able to upload multiple images
-@app.route("/api/upload_multiple_images", methods=["POST"])
+@app.route("/upload_multiple_images", methods=["POST"])
 def upload_multiple_images():
     try:
         data = request.get_json()
@@ -70,7 +70,7 @@ def upload_multiple_images():
 
 
 # handle being able to upload a single image
-@app.route("/api/upload_image", methods=["POST"])
+@app.route("/upload_image", methods=["POST"])
 def upload_image():
     try:
         data = request.get_json()
