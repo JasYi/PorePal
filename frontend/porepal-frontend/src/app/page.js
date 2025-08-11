@@ -122,7 +122,7 @@ export default function Home() {
           <div className="flex flex-row gap-3 justify-center w-full">
             {uploadedImages.map((image, index) => (
               <Card key={image.id} emoji={image.preview ? "📸" : "➕"}>
-                <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-blue-100 border-2 border-blue-200 group-hover:border-blue-400 transition-all mx-auto">
+                <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-blue-100 border-2 border-blue-200 group-hover:border-blue-400 transition-all flex items-center justify-center mx-auto">
                   {image.preview ? (
                     <>
                       <Image
@@ -170,10 +170,35 @@ export default function Home() {
           </div>
           <Button
             type="submit"
-            className="mt-4 w-full"
+            className={`mt-4 w-full flex items-center justify-center ${
+              loading ? "opacity-80 cursor-wait" : ""
+            }`}
             emoji="🚀"
-            disabled={!uploadedImages.every((img) => img.file)}>
-            {loading ? "Analyzing..." : "See My Results!"}
+            disabled={!uploadedImages.every((img) => img.file) || loading}>
+            {loading ? (
+              <>
+                <svg
+                  className="animate-spin h-5 w-5 mr-2 text-white inline"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+                Analyzing...
+              </>
+            ) : (
+              "See My Results!"
+            )}
           </Button>
         </form>
         <div className="mt-6 text-center text-xs text-muted-foreground select-none animate-fadein-slow">
@@ -183,7 +208,7 @@ export default function Home() {
           </span>
         </div>
       </main>
-      <MobileNav />
+      {/* <MobileNav /> removed for mobile */}
     </div>
   );
 }
