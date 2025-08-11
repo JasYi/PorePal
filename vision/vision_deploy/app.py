@@ -9,7 +9,20 @@ from ai_search import fetch_and_process_data
 from collections import defaultdict
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000", "https://pore-pal.vercel.app/"], supports_credentials=True)
+
+CORS(
+    app,
+    resources={r"/api/*": {
+        "origins": [
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "https://pore-pal.vercel.app"
+        ],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }},
+    supports_credentials=False
+)
 
 @app.route("/api/hello", methods=["GET"])
 def home():

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Hero from "@/components/Hero";
 import MobileNav from "@/components/MobileNav";
@@ -18,6 +18,18 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  useEffect(() => {
+    if (!baseUrl) return;
+    fetch(`${baseUrl}/api/hello`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Response from /hello:", data);
+      })
+      .catch((err) => {
+        console.error("Error fetching /hello:", err);
+      });
+  }, []);
 
   const [uploadedImages, setUploadedImages] = useState([
     { id: 1, file: null, preview: null },
