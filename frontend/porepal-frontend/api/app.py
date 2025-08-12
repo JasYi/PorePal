@@ -4,14 +4,14 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import base64
-from detection import detect_acne, get_model
+from detection import detect_acne
 from ai_search import fetch_and_process_data
 from collections import defaultdict
-from threading import Lock
+# from threading import Lock
 
 import os
-os.environ.setdefault("MPLBACKEND", "Agg")
-os.environ.setdefault("MPLCONFIGDIR", "/tmp")
+# os.environ.setdefault("MPLBACKEND", "Agg")
+# os.environ.setdefault("MPLCONFIGDIR", "/tmp")
 
 app = Flask(__name__)
 
@@ -30,23 +30,23 @@ CORS(
 )
 
 
-# ---- one-time warmup guard (works on all Flask versions) ----
-_model_warmed = False
-_warm_lock = Lock()
+# # ---- one-time warmup guard (works on all Flask versions) ----
+# _model_warmed = False
+# _warm_lock = Lock()
 
-def _ensure_warm():
-    global _model_warmed
-    if not _model_warmed:
-        with _warm_lock:
-            if not _model_warmed:
-                _ = get_model()   # loads YOLO once
-                _model_warmed = True
+# def _ensure_warm():
+#     global _model_warmed
+#     if not _model_warmed:
+#         with _warm_lock:
+#             if not _model_warmed:
+#                 _ = get_model()   # loads YOLO once
+#                 _model_warmed = True
 
-@app.before_request
-def maybe_warm():
-    # Optionally skip CORS preflight if you don't want it to do the warm:
-    # if request.method == "OPTIONS": return None
-    _ensure_warm()
+# @app.before_request
+# def maybe_warm():
+#     # Optionally skip CORS preflight if you don't want it to do the warm:
+#     # if request.method == "OPTIONS": return None
+#     _ensure_warm()
 
 @app.get("/healthz")
 def healthz():
