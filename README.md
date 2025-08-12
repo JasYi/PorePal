@@ -3,9 +3,9 @@
 Using AI to make personalized skincare reccomendations
 
 ## TODO:
-- [] deploy roboflow model on roboflow api
-- [] link roboflow api to backend
-- [] recheck and redeploy everything
+- [ ] deploy roboflow model on roboflow api
+- [ ] replace detection.py logic and those calls by calling roboflow api
+- [ ] recheck and redeploy everything
 
 ## Notes:
 
