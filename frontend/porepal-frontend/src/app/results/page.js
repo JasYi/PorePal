@@ -110,7 +110,7 @@ function ResultsPageInner() {
           </span>
         </div>
       </main>
-      <MobileNav />
+      {/* <MobileNav /> */}
       <style jsx global>{`
         @keyframes fadein {
           from {

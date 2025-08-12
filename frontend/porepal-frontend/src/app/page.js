@@ -19,17 +19,17 @@ import { useRouter } from "next/navigation";
 export default function Home() {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  useEffect(() => {
-    if (!baseUrl) return;
-    fetch(`${baseUrl}/hello`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Response from /hello:", data);
-      })
-      .catch((err) => {
-        console.error("Error fetching /hello:", err);
-      });
-  }, []);
+  // useEffect(() => {
+  //   if (!baseUrl) return;
+  //   fetch(`${baseUrl}/hello`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       console.log("Response from /hello:", data);
+  //     })
+  //     .catch((err) => {
+  //       console.error("Error fetching /hello:", err);
+  //     });
+  // }, []);
 
   const [uploadedImages, setUploadedImages] = useState([
     { id: 1, file: null, preview: null },

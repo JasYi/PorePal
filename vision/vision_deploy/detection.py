@@ -2,16 +2,23 @@ import cv2
 import base64
 import numpy as np
 from collections import Counter
+import os
+os.environ.setdefault("MPLBACKEND", "Agg")     # no GUI backend
+os.environ.setdefault("MPLCONFIGDIR", "/tmp")  # writable cache dir
 
-# Global variable for lazy loading
-_model = None
+from functools import lru_cache
+import torch
+from ultralytics import YOLO
 
+# Keep CPU usage + mem modest
+torch.set_num_threads(1)
+
+MODEL_PATH = "best.pt"
+
+@lru_cache(maxsize=1)
 def get_model():
-    global _model
-    if _model is None:
-        from ultralytics import YOLO
-        _model = YOLO('best.pt')
-    return _model
+    # Loads once per process; subsequent calls reuse same instance
+    return YOLO(MODEL_PATH)
 
 # modify this function to count differently
 def detect_acne(encoded_image, conf=0.1):
