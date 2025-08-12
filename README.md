@@ -4,6 +4,7 @@ Using AI to make personalized skincare reccomendations
 
 ## TODO:
 - [ ] deploy roboflow model on roboflow api
+- [ ] move it back into the vercel/flask backend?
 - [ ] replace detection.py logic and those calls by calling roboflow api
 - [ ] recheck and redeploy everything
 
