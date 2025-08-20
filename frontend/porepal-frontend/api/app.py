@@ -26,17 +26,17 @@ CORS(
 )
 
 
-@app.get("/healthz")
+@app.get("/api/healthz")
 def healthz():
     return "ok", 200
 
-@app.route("/hello", methods=["GET"])
+@app.route("/api/hello", methods=["GET"])
 def home():
     return jsonify({"message": "Hello, World!"})
 
 
 # handle being able to upload multiple images
-@app.route("/upload_multiple_images", methods=["POST"])
+@app.route("/api/upload_multiple_images", methods=["POST"])
 def upload_multiple_images():
     try:
         all_frequencies = defaultdict(int)
@@ -80,7 +80,7 @@ def upload_multiple_images():
 
 
 # handle being able to upload a single image
-@app.route("/upload_image", methods=["POST"])
+@app.route("/api/upload_image", methods=["POST"])
 def upload_image():
     try:
         data = request.get_json()

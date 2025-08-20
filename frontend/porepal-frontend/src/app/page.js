@@ -73,7 +73,7 @@ export default function Home() {
     });
 
     try {
-      const response = await fetch(`${baseUrl}/upload_multiple_images`, {
+      const response = await fetch(`${baseUrl}/api/upload_multiple_images`, {
         method: "POST",
         body: formData,
       });
