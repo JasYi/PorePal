@@ -19,18 +19,6 @@ import { useRouter } from "next/navigation";
 export default function Home() {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  // useEffect(() => {
-  //   if (!baseUrl) return;
-  //   fetch(`${baseUrl}/hello`)
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       console.log("Response from /hello:", data);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Error fetching /hello:", err);
-  //     });
-  // }, []);
-
   const [uploadedImages, setUploadedImages] = useState([
     { id: 1, file: null, preview: null },
     { id: 2, file: null, preview: null },
@@ -76,42 +64,26 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // Create an array of promises for reading files
-    const imagePromises = uploadedImages.map((img) => {
-      if (!img.file) return null;
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64String = reader.result.split(",")[1];
-          resolve(base64String);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(img.file);
-      });
+
+    const formData = new FormData();
+    uploadedImages.forEach((img, idx) => {
+      if (img.file) {
+        formData.append(`image${idx + 1}`, img.file);
+      }
     });
-    // Wait for all files to be read
-    const images_out = (await Promise.all(imagePromises)).filter(Boolean);
-    const payload = { images: images_out };
-    console.log(payload);
-    fetch(`${baseUrl}/upload_multiple_images`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setLoading(false);
-        // Redirect to /results with the analysis data
-        router.push(
-          `/results?data=${encodeURIComponent(JSON.stringify(data))}`
-        );
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        setLoading(false);
+
+    try {
+      const response = await fetch(`${baseUrl}/upload_multiple_images`, {
+        method: "POST",
+        body: formData,
       });
+      const data = await response.json();
+      setLoading(false);
+      router.push(`/results?data=${encodeURIComponent(JSON.stringify(data))}`);
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
   };
 
   return (

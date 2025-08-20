@@ -1,82 +1,36 @@
-# import cv2
-# import base64
-# import numpy as np
-from collections import Counter
-from inference_sdk import InferenceHTTPClient
+from collections import defaultdict
 import requests
 from dotenv import load_dotenv
 import os
-# os.environ.setdefault("MPLBACKEND", "Agg")     # no GUI backend
-# os.environ.setdefault("MPLCONFIGDIR", "/tmp")  # writable cache dir
 
-# from functools import lru_cache
-import torch
-# from ultralytics import YOLO
-
-# Keep CPU usage + mem modest
-# torch.set_num_threads(1)
-
-# MODEL_PATH = "api/best.pt"
-
-# @lru_cache(maxsize=1)
-# def get_model():
-#     # Loads once per process; subsequent calls reuse same instance
-#     return YOLO(MODEL_PATH)
-
-# modify this function to count differently
 load_dotenv()  # load environment variables from .env file
 ROBOFLOW_API_KEY = os.getenv("ROBOFLOW_API_KEY")
 
-def detect_acne(encoded_image, conf=0.1):
+def detect_acne(raw_bytes, conf=0.1):
 
     print("Detecting acne...")
 
-    API_KEY = ""
+    # parameters for object detection
+    API_KEY = ROBOFLOW_API_KEY
     MODEL_ID = "acne-kbm0q-axcj6/1"
-    CONFIDENCE = 0.1
+    CONFIDENCE = conf
 
+    # convert raw bytes into file payload
+    payload = {"file": ("upload.jpg", raw_bytes, "application/octet-stream")}
+
+    # query roboflow serverless deployment
     url = f"https://serverless.roboflow.com/{MODEL_ID}?api_key={API_KEY}&confidence={CONFIDENCE}"
-    with open("dylan.jpg", "rb") as img:
-        resp = requests.post(url, files={"file": img})
-
-    result = resp.json()
-    print(result)
+    resp = requests.post(url, files=payload)
+    response = resp.json()
+    print(response)
+    results = response['predictions']
 
 
     # A list to store the detected object names
-    detected_objects = []
+    detected_objects = defaultdict(int)
 
-    # as iterate, progressive update the counts so you don't have to do it at the end
-    # also go through results in high to low confidence
-    # if first time seeing item add photo + create counter for it
-    # redo in that way so you can pass the sub image encoded in base64 back to the front end
-    # use passed image to front end to provide pictures of the skin issue to the person
-    # also maybe provide annotated image so they can see
-    # Iterate over the results, using an index for unique file names
     for idx, result in enumerate(results):
-        # Render the image with annotations (returns a NumPy array in BGR format)
-        annotated_img = result.plot()
+        classname = result['class']
+        detected_objects[classname] += 1
 
-        # Save the annotated image with a unique filename
-        # filename = f'annotated_{filename}.jpg'
-        # cv2.imwrite(filename, annotated_img)
-        # print(f"Annotated image saved as: {filename}")
-
-        # Iterate over the detected boxes in the current result
-        # Each box contains a prediction, including the class index.
-        for box in result.boxes:
-            # Extract the class index.
-            class_idx = int(box.cls)
-            # Get the class name using the result's names dictionary.
-            object_name = result.names[class_idx]
-            detected_objects.append(object_name)
-
-    def get_object_frequencies(detected_objects):
-        # Count the frequency of each object in the detected_objects array
-        object_counter = Counter(detected_objects)
-        # Convert the counter to a list of tuples (object_name, frequency)
-        object_frequencies = list(object_counter.items())
-        object_frequencies.sort(key=lambda x: x[1], reverse=True)
-        return object_frequencies
-        
-    return get_object_frequencies(detected_objects)
+    return detected_objects

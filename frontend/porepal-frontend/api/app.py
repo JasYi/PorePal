@@ -7,11 +7,7 @@ import base64
 from detection import detect_acne
 from ai_search import fetch_and_process_data
 from collections import defaultdict
-# from threading import Lock
 
-import os
-# os.environ.setdefault("MPLBACKEND", "Agg")
-# os.environ.setdefault("MPLCONFIGDIR", "/tmp")
 
 app = Flask(__name__)
 
@@ -30,24 +26,6 @@ CORS(
 )
 
 
-# # ---- one-time warmup guard (works on all Flask versions) ----
-# _model_warmed = False
-# _warm_lock = Lock()
-
-# def _ensure_warm():
-#     global _model_warmed
-#     if not _model_warmed:
-#         with _warm_lock:
-#             if not _model_warmed:
-#                 _ = get_model()   # loads YOLO once
-#                 _model_warmed = True
-
-# @app.before_request
-# def maybe_warm():
-#     # Optionally skip CORS preflight if you don't want it to do the warm:
-#     # if request.method == "OPTIONS": return None
-#     _ensure_warm()
-
 @app.get("/healthz")
 def healthz():
     return "ok", 200
@@ -61,21 +39,25 @@ def home():
 @app.route("/upload_multiple_images", methods=["POST"])
 def upload_multiple_images():
     try:
-        data = request.get_json()
-        if 'images' not in data:
-            return jsonify({"detail": "No images provided"}), 400
-
-        images = data['images']
-        all_detected = []
-        for image_data in images:
-            image = base64.b64decode(image_data)
+        all_frequencies = defaultdict(int)
+        # iterate through files that come through
+        for key in request.files:
+            
+            # read image and extract raw information
+            file = request.files[key]
+            raw = file.read()
+            
             print("Processing image...")
-            detected = detect_acne(image, conf=0.1)
-            combined = defaultdict(int)
-            for elem in detected + all_detected:
-                combined[elem[0]] += elem[1]
-            all_detected = list(combined.items())
-            print("image detected: ", detected)
+
+            # Detect acne in the image
+            detected = detect_acne(raw, conf=0.1)
+
+            # Merge detected frequencies with existing ones
+            for k, v in detected.items():
+                all_frequencies[k] += v
+
+        # Sort all detected problems by frequency
+        all_detected = sorted(all_frequencies.items(), key=lambda x: x[1], reverse=True)
 
         # find solutions to all detected acne problems
         all_solutions = []
