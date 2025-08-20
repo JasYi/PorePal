@@ -4,8 +4,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import base64
-from common import detection
-from common import ai_search
+from detection import detect_acne
+from ai_search import fetch_and_process_data
 from collections import defaultdict
 
 
@@ -50,7 +50,7 @@ def upload_multiple_images():
             print("Processing image...")
 
             # Detect acne in the image
-            detected = detection.detect_acne(raw, conf=0.1)
+            detected = detect_acne(raw, conf=0.1)
 
             # Merge detected frequencies with existing ones
             for k, v in detected.items():
@@ -65,7 +65,7 @@ def upload_multiple_images():
             # find solutions to all detected acne problems
             # fetch_and_process_data may be async, so run synchronously if needed
             try:
-                solutions = ai_search.fetch_and_process_data(problem[0])
+                solutions = fetch_and_process_data(problem[0])
                 if hasattr(solutions, '__await__'):
                     # If coroutine, run synchronously
                     import asyncio
@@ -89,13 +89,13 @@ def upload_image():
 
         image_data = data['image']
         image = base64.b64decode(image_data)
-        detected = detection.detect_acne(image, conf=0.05)
+        detected = detect_acne(image, conf=0.05)
         print(detected)
         all_solutions = []
         for problem in detected:
             print(f"Detected problem: {problem}")
             try:
-                solutions = ai_search.fetch_and_process_data(problem[0])
+                solutions = fetch_and_process_data(problem[0])
                 if hasattr(solutions, '__await__'):
                     import asyncio
                     solutions = asyncio.run(solutions)
