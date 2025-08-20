@@ -61,18 +61,68 @@ export default function Home() {
   };
 
   // submit images to backend and get solutions as a response
+  const resizeImage = (file, maxSize = 2000, quality = 0.8) => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+          const longSide = Math.max(width, height);
+
+          if (longSide > maxSize) {
+            const scale = maxSize / longSide;
+            width = Math.round(width * scale);
+            height = Math.round(height * scale);
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                reject(new Error("Image resize failed"));
+              }
+            },
+            "image/jpeg",
+            quality
+          );
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     const formData = new FormData();
-    uploadedImages.forEach((img, idx) => {
-      if (img.file) {
-        formData.append(`image${idx + 1}`, img.file);
-      }
-    });
 
     try {
+      for (let idx = 0; idx < uploadedImages.length; idx++) {
+        const img = uploadedImages[idx];
+        if (img.file) {
+          const resizedBlob = await resizeImage(img.file, 2000, 0.8);
+          formData.append(
+            `image${idx + 1}`,
+            resizedBlob,
+            `image${idx + 1}.jpg`
+          );
+        }
+      }
+
       const response = await fetch(`${baseUrl}/api/upload_multiple_images`, {
         method: "POST",
         body: formData,

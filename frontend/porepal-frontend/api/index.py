@@ -47,6 +47,7 @@ def upload_multiple_images():
             file = request.files[key]
             raw = file.read()
             
+            
             print("Processing image...")
 
             # Detect acne in the image
