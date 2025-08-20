@@ -14,4 +14,4 @@ api/.env
 .DS_Store
 .env
 "@ | Set-Content .vercelignore
-api/
+
