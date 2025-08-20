@@ -4,8 +4,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import base64
-from detection import detect_acne
-from ai_search import fetch_and_process_data
+from .detection import detect_acne
+from .ai_search import fetch_and_process_data
 from collections import defaultdict
 
 
