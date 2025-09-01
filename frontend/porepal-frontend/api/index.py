@@ -40,24 +40,17 @@ def home():
 def upload_multiple_images():
     try:
         all_frequencies = defaultdict(int)
-        # iterate through files that come through
+        images_out = defaultdict(list)
+
         for key in request.files:
-            
-            # read image and extract raw information
             file = request.files[key]
             raw = file.read()
-            
-            
             print("Processing image...")
+            detected = detect_acne(raw, conf=0.05)
+            for label, count in detected["frequencies"].items():
+                all_frequencies[label] += count
+                images_out[label].append(detected["images"][label])
 
-            # Detect acne in the image
-            detected = detect_acne(raw, conf=0.1)
-
-            # Merge detected frequencies with existing ones
-            for k, v in detected.items():
-                all_frequencies[k] += v
-
-        # Sort all detected problems by frequency
         all_detected = sorted(all_frequencies.items(), key=lambda x: x[1], reverse=True)
 
         # find solutions to all detected acne problems
@@ -75,7 +68,7 @@ def upload_multiple_images():
                 solutions = [f"Error fetching solutions: {str(e)}"]
             all_solutions.append((problem[0], solutions))
 
-        return jsonify({"message": "Images received successfully", "solutions": all_solutions})
+        return jsonify({"message": "Images received successfully", "solutions": all_solutions, "images": dict(images_out)})
     except Exception as e:
         return jsonify({"detail": str(e)}), 400
 

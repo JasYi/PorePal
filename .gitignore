@@ -14,3 +14,4 @@
 /vision/vision_deploy/venv/
 /frontend/porepal-frontend/.env.local
 /frontend/porepal-frontend/venv/
+/.DS_Store

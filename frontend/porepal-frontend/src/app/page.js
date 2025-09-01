@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Upload, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useResults } from "./ResultsContext";
 
 export default function Home() {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -35,6 +36,7 @@ export default function Home() {
   ];
 
   const router = useRouter();
+  const { setResults } = useResults();
 
   const handleFileChange = (e, id) => {
     if (e.target.files && e.target.files[0]) {
@@ -129,7 +131,8 @@ export default function Home() {
       });
       const data = await response.json();
       setLoading(false);
-      router.push(`/results?data=${encodeURIComponent(JSON.stringify(data))}`);
+      setResults(data);
+      router.push("/results");
     } catch (error) {
       console.error("Error:", error);
       setLoading(false);
