@@ -71,11 +71,11 @@ function ResultsPageInner() {
               {currentLabel.replace(/_/g, " ")}
             </h2>
             <Card emoji="🖼️">
-              <div className="w-full flex flex-row gap-6 justify-center">
+              <div className="w-full flex flex-wrap gap-6 justify-center">
                 {imagesToShow.map((img, idx) => {
                   return (
                     <div key={idx} className="flex flex-col items-center">
-                      <div className="w-48 h-48 mb-3 flex items-center justify-center bg-secondary rounded-xl overflow-hidden border-2 border-border">
+                      <div className="image-container w-48 h-48 mb-3 flex items-center justify-center bg-secondary rounded-xl overflow-hidden border-2 border-border">
                         <img
                           src={`data:image/jpeg;base64,${img}`}
                           alt={`Analyzed skin`}
@@ -145,6 +145,16 @@ function ResultsPageInner() {
           }
           .animate-fadein-slow {
             animation: fadein 1.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+          }
+          .image-container {
+            width: 12rem;
+            height: 12rem;
+          }
+          @media (max-width: 640px) {
+            .image-container {
+              width: 7rem;
+              height: 7rem;
+            }
           }
         `}</style>
       </div>

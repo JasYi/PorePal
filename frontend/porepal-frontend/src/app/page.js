@@ -146,7 +146,7 @@ export default function Home() {
         <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
           <div className="flex flex-row gap-3 justify-center w-full">
             {uploadedImages.map((image, index) => (
-              <Card key={image.id} emoji={image.preview ? "📸" : "➕"}>
+              <Card key={image.id}>
                 <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-blue-100 border-2 border-blue-200 group-hover:border-blue-400 transition-all flex items-center justify-center mx-auto">
                   {image.preview ? (
                     <>
@@ -161,9 +161,10 @@ export default function Home() {
                         type="button"
                         className="absolute top-1 right-1 bg-white/80 rounded-full p-1 shadow hover:bg-hot-pink hover:text-white transition-colors"
                         onClick={() => removeImage(image.id)}
-                        aria-label="Remove image">
+                        aria-label="Remove image"
+                      >
                         <span role="img" aria-label="remove">
-                          ❌
+                          <X size={16} />
                         </span>
                       </button>
                     </>
@@ -172,7 +173,8 @@ export default function Home() {
                       type="button"
                       className="w-full h-full flex flex-col items-center justify-center text-electric-blue hover:text-hot-pink transition-colors"
                       onClick={() => triggerFileInput(index)}
-                      aria-label="Upload image">
+                      aria-label="Upload image"
+                    >
                       <span className="text-3xl mb-1 animate-bounce">📷</span>
                       <span className="text-xs font-semibold">
                         {exampleDescriptions[index]}
@@ -199,25 +201,29 @@ export default function Home() {
               loading ? "opacity-80 cursor-wait" : ""
             }`}
             emoji="🚀"
-            disabled={!uploadedImages.every((img) => img.file) || loading}>
+            disabled={!uploadedImages.every((img) => img.file) || loading}
+          >
             {loading ? (
               <>
                 <svg
                   className="animate-spin h-5 w-5 mr-2 text-white inline"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
-                  viewBox="0 0 24 24">
+                  viewBox="0 0 24 24"
+                >
                   <circle
                     className="opacity-25"
                     cx="12"
                     cy="12"
                     r="10"
                     stroke="currentColor"
-                    strokeWidth="4"></circle>
+                    strokeWidth="4"
+                  ></circle>
                   <path
                     className="opacity-75"
                     fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
                 </svg>
                 Analyzing...
               </>
